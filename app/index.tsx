@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Text, View, FlatList, Image, ActivityIndicator } from "react-native";
-import { RefreshControl } from "react-native-gesture-handler";
 
 export default function Index() {
 	const [characters, setCharacters] = useState<Array<Character> | null>(null);
@@ -10,19 +9,19 @@ export default function Index() {
 	const [refreshing, setRefreshing] = useState(false);
 
 	useEffect(() => {
-		fetch("https://rickandmortyapi.com/api/character")
-			.then((res) => {
-				setTimeout(() => {
-					// Artificially delay API response to show the loading spinner.
+		setTimeout(() => {
+			// Artificially delay API response to show the loading spinner.
+			fetch("https://rickandmortyapi.com/api/character")
+				.then((res) => {
 					res.json().then((data: GetCharactersResponse) => {
 						setCharacters(data.results);
 						setNextCharactersUrl(data.info.next);
 					});
-				}, 1000);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+		}, 1000);
 	}, []);
 
 	const fetchNextCharacters = () => {
@@ -60,6 +59,7 @@ export default function Index() {
 				});
 		}, 1000);
 	};
+
 	return (
 		<View
 			style={{
