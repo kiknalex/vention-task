@@ -2,19 +2,42 @@ import { useEffect, useState } from "react";
 import { Text, View, FlatList, Image, ActivityIndicator } from "react-native";
 
 export default function Index() {
-	const [characters, setCharacters] = useState<GetAllCharactersResponse | null>(
+	const [characters, setCharacters] = useState<Array<Character> | null>(null);
+	const [nextCharactersUrl, setNextCharactersUrl] = useState<string | null>(
 		null
 	);
 
 	useEffect(() => {
-		fetch("https://rickandmortyapi.com/api/character").then((res) => {
-			setTimeout(() => {
-				// Artificially delay API response to show the loading spinner.
-				res.json().then((data) => setCharacters(data));
-			}, 1000);
-		});
+		fetch("https://rickandmortyapi.com/api/character")
+			.then((res) => {
+				setTimeout(() => {
+					// Artificially delay API response to show the loading spinner.
+					res.json().then((data: GetCharactersResponse) => {
+						setCharacters(data.results);
+						setNextCharactersUrl(data.info.next);
+					});
+				}, 1000);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}, []);
 
+	const fetchNextCharacters = () => {
+		if (!nextCharactersUrl) {
+			throw new Error("Something went wrong");
+		}
+		fetch(nextCharactersUrl)
+			.then((res) => res.json())
+			.then((data: GetCharactersResponse) => {
+				setCharacters((prevCharacters) => [
+					...prevCharacters!,
+					...data.results,
+				]);
+				setNextCharactersUrl(data.info.next);
+			})
+			.catch((error) => console.error(error));
+	};
 	return (
 		<View
 			style={{
@@ -23,10 +46,11 @@ export default function Index() {
 				alignItems: "center",
 			}}
 		>
-			{characters?.results ? (
+			{characters ? (
 				<FlatList
 					style={{ flex: 1, marginBlock: 20 }}
-					data={characters.results}
+					data={characters}
+					onEndReached={fetchNextCharacters}
 					renderItem={(item) => (
 						<>
 							<Text

@@ -30,7 +30,7 @@ type PaginationInfo = {
 	prev: string | null;
 };
 
-type GetAllCharactersResponse = {
+type GetCharactersResponse = {
 	info: PaginationInfo;
 	results: Array<Character>;
 };
