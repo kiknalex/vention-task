@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Text, View, FlatList, Image } from "react-native";
 
 export default function Index() {
-	const [characters, setCharacters] = useState<any>(null);
+	const [characters, setCharacters] = useState<GetAllCharactersResponse | null>(
+		null
+	);
 
 	useEffect(() => {
 		fetch("https://rickandmortyapi.com/api/character")
