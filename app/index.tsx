@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, FlatList, Image } from "react-native";
+import { Text, View, FlatList, Image, ActivityIndicator } from "react-native";
 
 export default function Index() {
 	const [characters, setCharacters] = useState<GetAllCharactersResponse | null>(
@@ -7,20 +7,23 @@ export default function Index() {
 	);
 
 	useEffect(() => {
-		fetch("https://rickandmortyapi.com/api/character")
-			.then((res) => res.json())
-			.then((data) => setCharacters(data));
+		fetch("https://rickandmortyapi.com/api/character").then((res) => {
+			setTimeout(() => {
+				// Artificially delay API response to show the loading spinner.
+				res.json().then((data) => setCharacters(data));
+			}, 1000);
+		});
 	}, []);
 
 	return (
 		<View
 			style={{
 				flex: 1,
-				justifyContent: "flex-start",
+				justifyContent: "center",
 				alignItems: "center",
 			}}
 		>
-			{characters?.results && (
+			{characters?.results ? (
 				<FlatList
 					style={{ flex: 1, marginBlock: 20 }}
 					data={characters.results}
@@ -40,6 +43,8 @@ export default function Index() {
 						</>
 					)}
 				/>
+			) : (
+				<ActivityIndicator size="large" color="#000000" />
 			)}
 		</View>
 	);
